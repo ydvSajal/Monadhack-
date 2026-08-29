@@ -8,19 +8,19 @@ export default function Landing() {
   const deployed = MARKET_ADDRESS !== "0x0000000000000000000000000000000000000000";
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-5">
+    <div className="mx-auto w-full max-w-6xl px-5">
       <nav className="flex h-16 items-center justify-between">
         <span className="text-lg font-semibold tracking-tight">Verdikt</span>
         <Link
           href="/app"
-          className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-fg transition hover:bg-accent-soft"
+          className="rounded-full bg-accent px-4 py-2 text-sm font-medium text-accent-fg transition hover:bg-accent-soft"
         >
           Open app
         </Link>
       </nav>
 
       {/* Hero */}
-      <section className="hero-grid relative grid min-h-[calc(100dvh-4rem)] items-center gap-12 pb-16 pt-12 lg:grid-cols-[1.1fr_0.9fr]">
+      <section className="grid items-center gap-12 py-14 lg:grid-cols-[1.05fr_0.95fr] lg:py-20">
         <div className="flex flex-col items-start gap-6">
           <p className="text-xs font-medium uppercase tracking-[0.18em] text-accent-soft">
             On-chain opinion market
@@ -36,17 +36,17 @@ export default function Landing() {
           </p>
           <div className="flex flex-wrap gap-3">
             <Link
-              href="/app"
-              className="rounded-lg bg-accent px-5 py-3 text-sm font-medium text-accent-fg transition hover:bg-accent-soft"
+              href="/app?role=employer"
+              className="rounded-full bg-accent px-5 py-3 text-sm font-medium text-accent-fg transition hover:bg-accent-soft"
             >
-              Open app
+              Post a task
             </Link>
-            <a
-              href="#waitlist"
-              className="rounded-lg border border-border bg-surface px-5 py-3 text-sm font-medium transition hover:bg-surface-2"
+            <Link
+              href="/app?role=labeler"
+              className="glass rounded-full px-5 py-3 text-sm font-medium transition hover:border-border-strong"
             >
-              Join the waitlist
-            </a>
+              Label &amp; earn
+            </Link>
           </div>
           <p className="tabular text-xs text-muted">Live on Monad testnet · chain 10143</p>
         </div>
@@ -54,9 +54,9 @@ export default function Landing() {
       </section>
 
       {/* How it works */}
-      <section className="border-t border-border py-20">
+      <section className="border-t border-border py-16 md:py-20">
         <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">How it works</h2>
-        <ol className="mt-10 flex flex-col gap-px overflow-hidden rounded-[var(--radius-lg)] border border-border">
+        <ol className="mt-8 grid gap-3 sm:grid-cols-2">
           {[
             {
               n: "01",
@@ -79,11 +79,11 @@ export default function Landing() {
               d: "Spot bad votes before the window ends? Freeze the task. An arbiter voids the bad wallets and returns their share.",
             },
           ].map((s) => (
-            <li key={s.n} className="flex gap-5 bg-surface p-5 sm:p-6">
+            <li key={s.n} className="glass flex gap-5 rounded-[var(--radius-lg)] p-5 sm:p-6">
               <span className="tabular text-sm text-accent-soft">{s.n}</span>
               <div>
                 <h3 className="font-medium">{s.t}</h3>
-                <p className="mt-1 max-w-[60ch] text-sm text-muted">{s.d}</p>
+                <p className="mt-1 max-w-[46ch] text-sm text-muted">{s.d}</p>
               </div>
             </li>
           ))}
@@ -91,15 +91,15 @@ export default function Landing() {
       </section>
 
       {/* Use cases */}
-      <section className="grid gap-6 border-t border-border py-20 md:grid-cols-2">
-        <div className="rounded-[var(--radius-lg)] border border-border bg-surface p-6">
+      <section className="grid gap-4 border-t border-border py-16 md:grid-cols-2 md:py-20">
+        <div className="glass rounded-[var(--radius-lg)] p-6">
           <h3 className="text-lg font-medium">Thumbnail scoring</h3>
           <p className="mt-2 text-sm text-muted">
             Upload two or three thumbnails, let hundreds of people pick the winner before you publish.
             The tally lives on-chain, so the result is auditable.
           </p>
         </div>
-        <div className="rounded-[var(--radius-lg)] border border-border bg-surface p-6">
+        <div className="glass rounded-[var(--radius-lg)] p-6">
           <h3 className="text-lg font-medium">Data labeling</h3>
           <p className="mt-2 text-sm text-muted">
             Post raw items with a fixed choice set. Get a labeled dataset with per-item vote
@@ -109,7 +109,7 @@ export default function Landing() {
       </section>
 
       {/* Waitlist */}
-      <section id="waitlist" className="border-t border-border py-20">
+      <section id="waitlist" className="border-t border-border py-16 md:py-20">
         <div className="max-w-xl">
           <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
             Get the crowd&apos;s verdict on your work
@@ -137,6 +137,6 @@ export default function Landing() {
         </div>
         <p>Unaudited escrow. Testnet only. Do not send real funds.</p>
       </footer>
-    </main>
+    </div>
   );
 }

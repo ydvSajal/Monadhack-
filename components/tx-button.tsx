@@ -16,10 +16,18 @@ type Props = {
   } | null;
   disabled?: boolean;
   variant?: "primary" | "ghost" | "danger";
+  className?: string;
   onConfirmed?: () => void;
 };
 
-export function TxButton({ label, request, disabled, variant = "primary", onConfirmed }: Props) {
+export function TxButton({
+  label,
+  request,
+  disabled,
+  variant = "primary",
+  className,
+  onConfirmed,
+}: Props) {
   const { writeContract, data: hash, isPending, error, reset } = useWriteContract();
   const { isLoading: mining, isSuccess } = useWaitForTransactionReceipt({ hash });
 
@@ -37,6 +45,7 @@ export function TxButton({ label, request, disabled, variant = "primary", onConf
     <div className="flex flex-col gap-1.5">
       <Button
         variant={variant}
+        className={className}
         disabled={disabled || busy || !request}
         onClick={() => request && writeContract(request as never)}
       >

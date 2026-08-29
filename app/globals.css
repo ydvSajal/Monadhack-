@@ -1,31 +1,40 @@
 @import "tailwindcss";
 
-/* Verdikt — committed dark theme. Monad-violet accent on a near-black ground. */
+/* Verdikt — light glassmorphism. Warm off-white ground, single amber accent, monochrome ink. */
 :root {
-  --background: #0b0a10;
-  --surface: #141320;
-  --surface-2: #1c1a2b;
-  --border: #2a2740;
-  --foreground: #ece9f7;
-  --muted: #9a95b8;
-  --accent: #836ef9;
-  --accent-fg: #0b0a10;
-  --accent-soft: #a394ff;
-  --positive: #4ade80;
-  --danger: #fb7185;
-  --radius: 14px;
+  --background: #f6f5f3;
+  --background-2: #efedea;
+  --surface: rgba(255, 255, 255, 0.72);
+  --surface-solid: #ffffff;
+  --surface-2: rgba(255, 255, 255, 0.5);
+  --border: rgba(23, 20, 17, 0.1);
+  --border-strong: rgba(23, 20, 17, 0.18);
+  --foreground: #1a1714;
+  --muted: #6f6862;
+  --accent: #c2740c;
+  --accent-fg: #ffffff;
+  --accent-soft: #9a5c08;
+  --accent-wash: rgba(194, 116, 12, 0.12);
+  --positive: #1f7a4d;
+  --danger: #c0392b;
+  --radius: 16px;
+  --glass-shadow: 0 8px 40px -12px rgba(23, 20, 17, 0.18);
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-background-2: var(--background-2);
   --color-surface: var(--surface);
+  --color-surface-solid: var(--surface-solid);
   --color-surface-2: var(--surface-2);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-accent-fg: var(--accent-fg);
   --color-accent-soft: var(--accent-soft);
+  --color-accent-wash: var(--accent-wash);
   --color-positive: var(--positive);
   --color-danger: var(--danger);
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
@@ -37,11 +46,63 @@
   border-color: var(--border);
 }
 
+html,
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+}
+
+/* full-bleed backdrop: fixed so it always covers the viewport, never shrinks with a container */
+.app-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  pointer-events: none;
+  background-color: var(--background);
+  background-image:
+    radial-gradient(900px circle at 12% -10%, rgba(194, 116, 12, 0.1), transparent 55%),
+    radial-gradient(1100px circle at 100% 0%, rgba(23, 20, 17, 0.05), transparent 50%),
+    linear-gradient(rgba(23, 20, 17, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 20, 17, 0.045) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    100% 100%,
+    48px 48px,
+    48px 48px;
+  background-position:
+    center,
+    center,
+    center,
+    center;
+}
+
+/* frosted panel */
+.glass {
+  background: var(--surface);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  border: 1px solid var(--border);
+  box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: var(--surface-solid);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass {
+    background: var(--surface-solid);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }
 
 /* number readouts */
@@ -57,22 +118,4 @@ body {
     animation-duration: 0.001ms !important;
     transition-duration: 0.001ms !important;
   }
-}
-
-/* subtle grid backdrop for the hero */
-.hero-grid {
-  background-image:
-    radial-gradient(circle at 50% 0%, rgba(131, 110, 249, 0.18), transparent 60%),
-    linear-gradient(var(--border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border) 1px, transparent 1px);
-  background-size:
-    100% 100%,
-    44px 44px,
-    44px 44px;
-  background-position:
-    center top,
-    center,
-    center;
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 90%);
-  mask-image: linear-gradient(180deg, #000 0%, transparent 90%);
 }

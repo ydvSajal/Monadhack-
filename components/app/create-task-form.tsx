@@ -7,50 +7,45 @@ import { encodeMeta } from "@/lib/meta";
 import { fmtMON } from "@/lib/format";
 import { Button, Card, Field, Input, Pill } from "@/components/ui";
 import { TxButton } from "@/components/tx-button";
-
-type Row = { text: string; choices: string };
+import { ImageUpload } from "@/components/upload";
 
 const LETTERS = ["A", "B", "C", "D"];
 
+type ThumbRow = { images: string[] };
+type LabelRow = { text: string; choices: string };
+
 export function CreateTaskForm({ onCreated }: { onCreated: () => void }) {
-  const [title, setTitle] = useState("Which thumbnail wins?");
   const [kind, setKind] = useState<TaskMeta["kind"]>("thumbnail");
+  const [title, setTitle] = useState("Which thumbnail wins?");
   const [reward, setReward] = useState("0.5");
   const [durationSecs, setDurationSecs] = useState("60");
   const [fundVotes, setFundVotes] = useState("10");
-  const [rows, setRows] = useState<Row[]>([
-    { text: "https://picsum.photos/seed/a/400/225", choices: "" },
-    { text: "https://picsum.photos/seed/b/400/225", choices: "" },
-  ]);
+  const [thumbRows, setThumbRows] = useState<ThumbRow[]>([{ images: [] }]);
+  const [labelRows, setLabelRows] = useState<LabelRow[]>([{ text: "", choices: "spam, not spam" }]);
 
-  const meta: TaskMeta = useMemo(
-    () => ({
+  const meta: TaskMeta = useMemo(() => {
+    if (kind === "thumbnail") {
+      return {
+        title: title.trim() || "Untitled task",
+        kind,
+        items: thumbRows.map((r) => ({
+          imageUrls: r.images,
+          choices: r.images.map((_, i) => `Thumbnail ${LETTERS[i] ?? i + 1}`),
+        })),
+      };
+    }
+    return {
       title: title.trim() || "Untitled task",
       kind,
-      items: rows.map((r) =>
-        kind === "thumbnail"
-          ? {
-              imageUrls: r.text
-                .split(/[\n,]/)
-                .map((s) => s.trim())
-                .filter(Boolean),
-              choices: r.text
-                .split(/[\n,]/)
-                .map((s) => s.trim())
-                .filter(Boolean)
-                .map((_, i) => `Thumbnail ${LETTERS[i] ?? i + 1}`),
-            }
-          : {
-              prompt: r.text.trim(),
-              choices: r.choices
-                .split(",")
-                .map((s) => s.trim())
-                .filter(Boolean),
-            },
-      ),
-    }),
-    [title, kind, rows],
-  );
+      items: labelRows.map((r) => ({
+        prompt: r.text.trim(),
+        choices: r.choices
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
+      })),
+    };
+  }, [kind, title, thumbRows, labelRows]);
 
   const rewardWei = (() => {
     try {
@@ -79,20 +74,30 @@ export function CreateTaskForm({ onCreated }: { onCreated: () => void }) {
     : null;
 
   return (
-    <Card className="flex flex-col gap-5">
-      <div className="flex items-center gap-2">
-        <button
-          onClick={() => setKind("thumbnail")}
-          className={`rounded-md px-3 py-1.5 text-sm ${kind === "thumbnail" ? "bg-accent text-accent-fg" : "bg-surface-2 text-muted"}`}
-        >
-          Thumbnail scoring
-        </button>
-        <button
-          onClick={() => setKind("label")}
-          className={`rounded-md px-3 py-1.5 text-sm ${kind === "label" ? "bg-accent text-accent-fg" : "bg-surface-2 text-muted"}`}
-        >
-          Data labeling
-        </button>
+    <Card className="flex flex-col gap-6">
+      <div className="grid gap-2 sm:grid-cols-2">
+        {(
+          [
+            { k: "thumbnail" as const, t: "Thumbnail A/B test", d: "Upload 2–4 options per item, the crowd picks the winner." },
+            { k: "label" as const, t: "Data labeling", d: "Post text or items, the crowd assigns a label from your set." },
+          ]
+        ).map(({ k, t, d }) => (
+          <button
+            key={k}
+            onClick={() => {
+              setKind(k);
+              setTitle(k === "thumbnail" ? "Which thumbnail wins?" : "Label these items");
+            }}
+            className={`rounded-xl border p-3 text-left text-sm transition ${
+              kind === k
+                ? "border-accent bg-accent-wash"
+                : "border-border-strong bg-surface-2 hover:border-border-strong"
+            }`}
+          >
+            <span className="font-medium">{t}</span>
+            <span className="mt-0.5 block text-xs text-muted">{d}</span>
+          </button>
+        ))}
       </div>
 
       <Field label="Task title">
@@ -104,7 +109,11 @@ export function CreateTaskForm({ onCreated }: { onCreated: () => void }) {
           <Input value={reward} onChange={(e) => setReward(e.target.value)} inputMode="decimal" />
         </Field>
         <Field label="Votes to fund">
-          <Input value={fundVotes} onChange={(e) => setFundVotes(e.target.value)} inputMode="numeric" />
+          <Input
+            value={fundVotes}
+            onChange={(e) => setFundVotes(e.target.value)}
+            inputMode="numeric"
+          />
         </Field>
         <Field label="Window (seconds)" hint="60 keeps a live demo short">
           <Input
@@ -115,53 +124,84 @@ export function CreateTaskForm({ onCreated }: { onCreated: () => void }) {
         </Field>
       </div>
 
-      <div className="flex flex-col gap-3">
-        <span className="text-sm font-medium">
-          {kind === "thumbnail" ? "Items — one per line, comma-separate the image URLs" : "Items to label"}
-        </span>
-        {rows.map((r, i) => (
-          <div key={i} className="flex flex-col gap-2 rounded-lg border border-border bg-surface-2 p-3">
-            <div className="flex items-center justify-between">
-              <Pill>Item {i + 1}</Pill>
-              {rows.length > 1 && (
-                <button
-                  className="text-xs text-danger"
-                  onClick={() => setRows(rows.filter((_, j) => j !== i))}
-                >
-                  Remove
-                </button>
+      {kind === "thumbnail" ? (
+        <div className="flex flex-col gap-3">
+          <span className="text-sm font-medium">Items — each is one A/B test</span>
+          {thumbRows.map((r, i) => (
+            <div key={i} className="flex flex-col gap-2 rounded-xl border border-border bg-surface-2 p-3">
+              <div className="flex items-center justify-between">
+                <Pill>Item {i + 1}</Pill>
+                {thumbRows.length > 1 && (
+                  <button
+                    className="text-xs text-danger"
+                    onClick={() => setThumbRows(thumbRows.filter((_, j) => j !== i))}
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+              <ImageUpload
+                urls={r.images}
+                onChange={(images) =>
+                  setThumbRows(thumbRows.map((x, j) => (j === i ? { images } : x)))
+                }
+              />
+              {r.images.length < 2 && (
+                <span className="text-xs text-muted">Add at least 2 images.</span>
               )}
             </div>
-            <Input
-              placeholder={
-                kind === "thumbnail"
-                  ? "https://…/a.jpg, https://…/b.jpg"
-                  : "The text or item to label"
-              }
-              value={r.text}
-              onChange={(e) =>
-                setRows(rows.map((x, j) => (j === i ? { ...x, text: e.target.value } : x)))
-              }
-            />
-            {kind === "label" && (
+          ))}
+          <Button
+            variant="ghost"
+            onClick={() => setThumbRows([...thumbRows, { images: [] }])}
+            className="self-start"
+          >
+            Add item
+          </Button>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          <span className="text-sm font-medium">Items to label</span>
+          {labelRows.map((r, i) => (
+            <div key={i} className="flex flex-col gap-2 rounded-xl border border-border bg-surface-2 p-3">
+              <div className="flex items-center justify-between">
+                <Pill>Item {i + 1}</Pill>
+                {labelRows.length > 1 && (
+                  <button
+                    className="text-xs text-danger"
+                    onClick={() => setLabelRows(labelRows.filter((_, j) => j !== i))}
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+              <Input
+                placeholder="The text or item to label"
+                value={r.text}
+                onChange={(e) =>
+                  setLabelRows(labelRows.map((x, j) => (j === i ? { ...x, text: e.target.value } : x)))
+                }
+              />
               <Input
                 placeholder="Choices, comma separated: spam, not spam"
                 value={r.choices}
                 onChange={(e) =>
-                  setRows(rows.map((x, j) => (j === i ? { ...x, choices: e.target.value } : x)))
+                  setLabelRows(
+                    labelRows.map((x, j) => (j === i ? { ...x, choices: e.target.value } : x)),
+                  )
                 }
               />
-            )}
-          </div>
-        ))}
-        <Button
-          variant="ghost"
-          onClick={() => setRows([...rows, { text: "", choices: "" }])}
-          className="self-start"
-        >
-          Add item
-        </Button>
-      </div>
+            </div>
+          ))}
+          <Button
+            variant="ghost"
+            onClick={() => setLabelRows([...labelRows, { text: "", choices: "spam, not spam" }])}
+            className="self-start"
+          >
+            Add item
+          </Button>
+        </div>
+      )}
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
         <span className="tabular text-sm text-muted">

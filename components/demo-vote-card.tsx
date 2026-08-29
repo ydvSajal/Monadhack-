@@ -16,7 +16,7 @@ export function DemoVoteCard() {
   }, []);
 
   return (
-    <div className="rounded-[var(--radius-lg)] border border-border bg-surface p-5 shadow-[0_24px_80px_-40px_rgba(131,110,249,0.5)]">
+    <div className="glass rounded-[var(--radius-lg)] p-5">
       <div className="flex items-center justify-between text-xs text-muted">
         <span>Which thumbnail wins?</span>
         <span className="tabular text-accent-soft">0.5 MON / vote</span>
@@ -36,7 +36,7 @@ export function DemoVoteCard() {
                   <span>{o.label}</span>
                   <span className="tabular text-muted">{o.votes}%</span>
                 </div>
-                <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-surface-2">
+                <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-foreground/10">
                   <div
                     className="h-full rounded-full bg-accent transition-[width] duration-700 ease-out"
                     style={{ width: fill ? `${o.votes}%` : "0%" }}

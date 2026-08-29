@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "The crowd's verdict, settled on-chain. Live on Monad testnet.",
     start_url: "/",
     display: "standalone",
-    background_color: "#0b0a10",
-    theme_color: "#0b0a10",
+    background_color: "#f6f5f3",
+    theme_color: "#f6f5f3",
     orientation: "portrait",
     icons: [
       { src: "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },

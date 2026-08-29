@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0b0a10",
+  themeColor: "#f6f5f3",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -35,6 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <div className="app-backdrop" aria-hidden />
         <Providers>{children}</Providers>
         <RegisterSW />
       </body>

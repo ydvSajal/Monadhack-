@@ -1,12 +1,12 @@
-// Generates public/icon-192.png and icon-512.png: violet ground, white "V" glyph.
+// Generates public/icon-192.png and icon-512.png: ink ground, amber "V" glyph.
 // ponytail: no design tool, no image dep beyond pngjs. Run: node scripts/gen-icons.js
 const fs = require("fs");
 const path = require("path");
 const { PNG } = require("pngjs");
 
-const BG = [0x0b, 0x0a, 0x10];
-const VIOLET = [0x83, 0x6e, 0xf9];
-const WHITE = [0xf2, 0xf0, 0xff];
+const BG = [0x1a, 0x17, 0x14];
+const VIOLET = [0x1a, 0x17, 0x14];
+const WHITE = [0xd9, 0x8a, 0x1f];
 
 function make(size) {
   const png = new PNG({ width: size, height: size });

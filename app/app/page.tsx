@@ -7,14 +7,15 @@ import { MARKET_ADDRESS } from "@/lib/contract";
 import { explorerAddress } from "@/lib/chain";
 import { WalletButton } from "@/components/wallet";
 import { CreateTaskForm } from "@/components/app/create-task-form";
+import { LabelFlow } from "@/components/app/label-flow";
 import { TaskExplorer } from "@/components/app/task-explorer";
 import { EarningsPanel } from "@/components/app/earnings-panel";
 
-const TABS = ["Browse & vote", "Create task", "Earnings"] as const;
+const TABS = ["Label", "Browse & results", "Create task", "Earnings"] as const;
 type Tab = (typeof TABS)[number];
 
 export default function AppPage() {
-  const [tab, setTab] = useState<Tab>("Browse & vote");
+  const [tab, setTab] = useState<Tab>("Label");
   const [bump, setBump] = useState(0);
   const { isConnected } = useAccount();
   const deployed = MARKET_ADDRESS !== "0x0000000000000000000000000000000000000000";
@@ -34,12 +35,12 @@ export default function AppPage() {
         </p>
       )}
 
-      <div className="mb-6 flex gap-1 rounded-lg border border-border bg-surface p-1">
+      <div className="mb-6 flex gap-1 overflow-x-auto rounded-lg border border-border bg-surface p-1">
         {TABS.map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`flex-1 rounded-md px-3 py-2 text-sm transition ${
+            className={`flex-1 whitespace-nowrap rounded-md px-3 py-2 text-sm transition ${
               tab === t ? "bg-accent text-accent-fg" : "text-muted hover:text-foreground"
             }`}
           >
@@ -57,11 +58,12 @@ export default function AppPage() {
           <CreateTaskForm
             onCreated={() => {
               setBump((b) => b + 1);
-              setTab("Browse & vote");
+              setTab("Browse & results");
             }}
           />
         )}
-        {tab === "Browse & vote" && <TaskExplorer />}
+        {tab === "Label" && <LabelFlow />}
+        {tab === "Browse & results" && <TaskExplorer />}
         {tab === "Earnings" && <EarningsPanel />}
       </div>
 

@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+/* Verdikt — committed dark theme. Monad-violet accent on a near-black ground. */
+:root {
+  --background: #0b0a10;
+  --surface: #141320;
+  --surface-2: #1c1a2b;
+  --border: #2a2740;
+  --foreground: #ece9f7;
+  --muted: #9a95b8;
+  --accent: #836ef9;
+  --accent-fg: #0b0a10;
+  --accent-soft: #a394ff;
+  --positive: #4ade80;
+  --danger: #fb7185;
+  --radius: 14px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-positive: var(--positive);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --radius-lg: var(--radius);
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* number readouts */
+.tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* subtle grid backdrop for the hero */
+.hero-grid {
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(131, 110, 249, 0.18), transparent 60%),
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    44px 44px,
+    44px 44px;
+  background-position:
+    center top,
+    center,
+    center;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 90%);
+  mask-image: linear-gradient(180deg, #000 0%, transparent 90%);
+}
